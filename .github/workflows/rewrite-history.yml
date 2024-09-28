@@ -2,10 +2,11 @@ name: Delete Commits After Release
 
 on:
   release:
-    types: [published]  # Trigger when a new release is published
+    types: [published]  # Triggers the action when a release is published
+  workflow_dispatch:  # Allows manual triggering for testing purposes
 
 permissions:
-  contents: write  # Required to push changes to the repository
+  contents: write  # Required to modify the repository content, including pushing changes
 
 jobs:
   reset-branch:
@@ -15,22 +16,28 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Fetch all history to ensure access to tags and commits
+          fetch-depth: 0  # Fetch full history including all tags
 
       - name: Get the latest release tag
         id: get_latest
         run: |
-          # Get the latest release tag
-          latest_tag=$(git describe --tags `git rev-list --tags --max-count=1`)
-          echo "Latest tag: $latest_tag"
+          # Attempt to get the latest tag associated with the release
+          latest_tag=$(git describe --tags $(git rev-list --tags --max-count=1) 2>/dev/null || echo "no-tag")
+          if [ "$latest_tag" = "no-tag" ]; then
+            echo "No tags found; aborting action."
+            exit 1
+          fi
+          echo "Latest tag found: $latest_tag"
           echo "tag=$latest_tag" >> $GITHUB_ENV
 
       - name: Reset branch to latest release tag
+        if: success()  # Only run this step if the previous step was successful
         run: |
-          # Reset to the latest release tag
+          # Reset the branch to the commit of the latest tag
+          echo "Resetting the branch to tag: ${{ env.tag }}"
           git reset --hard ${{ env.tag }}
 
-          # Force push to rewrite the branch history
+          # Force push to overwrite history on the branch
           git push origin HEAD --force
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
