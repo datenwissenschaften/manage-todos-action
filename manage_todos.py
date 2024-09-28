@@ -65,11 +65,6 @@ def create_github_issue(title, description):
 def process_todos():
     todos = find_todos()
     for line in todos:
-        # Skip if file is not of the specified type
-        if not line.endswith(tuple(FILE_ENDINGS)):
-            print(f"Skipping file: {line}")
-            continue
-
         # Extract filepath, line number, and content
         match = re.match(r"^(.*):(\d+):(.*)$", line)
         if not match:
@@ -78,6 +73,11 @@ def process_todos():
 
         filepath, line_number, content = match.groups()
         line_number = int(line_number)
+
+        # Skip if file is not of the specified type
+        if not filepath.endswith(tuple(FILE_ENDINGS)):
+            print(f"Skipping file: {line}")
+            continue
 
         print(f"Processing TODO: {content.strip()} in {filepath} at line {line_number}")
 

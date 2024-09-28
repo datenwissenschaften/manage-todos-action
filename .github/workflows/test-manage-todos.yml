@@ -64,3 +64,23 @@ jobs:
           echo "Checking the modified files:"
           cat src/datenwissenschaften/data.service.ts
           cat src/datenwissenschaften/science.service.ts
+
+      - name: Close all created issues
+        run: |
+          echo "Closing all issues created by the action"
+          
+          # Fetch recent issues with label 'todo' to identify issues created by the action
+          issues=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                 -H "Accept: application/vnd.github.v3+json" \
+                 https://api.github.com/repos/${{ github.repository }}/issues?labels=todo&per_page=5)
+
+          # Loop through each issue and close it
+          echo "$issues" | jq -c '.[]' | while read -r issue; do
+            issue_number=$(echo "$issue" | jq '.number')
+            echo "Closing issue #$issue_number"
+            curl -X PATCH \
+                 -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                 -H "Accept: application/vnd.github.v3+json" \
+                 https://api.github.com/repos/${{ github.repository }}/issues/$issue_number \
+                 -d '{"state": "closed"}'
+          done
