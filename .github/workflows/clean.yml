@@ -44,3 +44,21 @@ jobs:
               gh api repos/${{ github.repository }}/git/refs/tags/$TAG -X DELETE
             fi
           done
+
+      - name: Get list of releases
+        run: |
+          # Fetch all releases and filter based on the last major version
+          RELEASES=$(gh api repos/${{ github.repository }}/releases | jq -r '.[] | select(.tag_name | startswith(env.MAJOR_VERSION)) | .tag_name')
+          echo "Releases found: $RELEASES"
+
+      - name: Delete old releases except the last
+        if: startsWith(env.RELEASE_VERSION, 'v')
+        run: |
+          for RELEASE in $RELEASES; do
+            if [ "$RELEASE" != "$LATEST_MINOR" ]; then
+              echo "Deleting old release: $RELEASE"
+              # Get the release ID and delete it
+              RELEASE_ID=$(gh api repos/${{ github.repository }}/releases | jq -r ".[] | select(.tag_name == \"$RELEASE\") | .id")
+              gh api repos/${{ github.repository }}/releases/$RELEASE_ID -X DELETE
+            fi
+          done
