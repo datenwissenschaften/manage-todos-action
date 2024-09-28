@@ -63,6 +63,8 @@ Imagine writing a TODO comment like this in your code:
 
 ```typescript
 // TODO: Refactor this function to improve performance.
+// This function is slow and needs to be optimized.
+// Investigate potential bottlenecks and implement necessary changes.
 ```
 
 With this GitHub Action, that comment will automatically turn into a GitHub issue, fully documented with the file name, line number, and author information. The issue will stay open until the TODO is removed, helping you keep track of tasks with minimal effort.
