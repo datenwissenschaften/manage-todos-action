@@ -19,7 +19,7 @@ def find_todos():
     for filepath in FILES_TO_SEARCH:
         # Run grep to find TODO comments with line numbers
         result = subprocess.run(
-            ["grep", "-rn", "// TODO", filepath], capture_output=True, text=True
+            ["grep", "-rn", "//TODO", filepath], capture_output=True, text=True
         )
         todos.extend(result.stdout.strip().split("\n"))
     return [todo for todo in todos if todo]  # Filter out empty lines
@@ -81,4 +81,29 @@ def process_todos():
 
         # Read subsequent lines starting with // as description
         with open(filepath, "r") as file:
-            lines
+            lines = file.readlines()
+            for i in range(line_number, len(lines)):
+                desc_line = lines[i].strip()
+                if desc_line.startswith("//"):
+                    description += desc_line.replace("//", "").strip() + "\n"
+                else:
+                    break
+
+        # Get author information using git blame
+        author = get_author(filepath, line_number)
+
+        # Append filename and author details to the description
+        description += f"\n**File:** {filepath}\n**Author:** {author}\n"
+
+        # Create a new GitHub issue
+        issue_number = create_github_issue(title, description)
+
+        # Append the issue number to the TODO line if issue creation was successful
+        if issue_number:
+            lines[line_number - 1] = f"{lines[line_number - 1].strip()} [#{issue_number}]\n"
+            with open(filepath, "w") as file:
+                file.writelines(lines)
+
+# Run the main function
+if __name__ == "__main__":
+    process_todos()
