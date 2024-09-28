@@ -39,25 +39,14 @@ jobs:
           # Save the latest tag as an environment variable for use in subsequent steps
           echo "tag=$latest_tag" >> $GITHUB_ENV
 
-      - name: Get the current release version
-        run: |
-          # Extract the release version from the ref, expected format 'refs/tags/vX.Y.Z'
-          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-            RELEASE_VERSION="${GITHUB_REF#refs/tags/}"
-            echo "RELEASE_VERSION=${RELEASE_VERSION}" >> $GITHUB_ENV
-          else
-            echo "This action is triggered from a non-tag event: ${GITHUB_REF}"
-            exit 1
-          fi
-
       - name: Parse major version
         run: |
           # Extract major version only if the version format is correct
-          if [[ "${RELEASE_VERSION}" =~ ^v[0-9]+(\.[0-9]+)*$ ]]; then
-            MAJOR_VERSION=$(echo "${RELEASE_VERSION}" | cut -d '.' -f 1)
+          if [[ "${env.tag}" =~ ^v[0-9]+(\.[0-9]+)*$ ]]; then
+            MAJOR_VERSION=$(echo "${env.tag}" | cut -d '.' -f 1)
             echo "MAJOR_VERSION=${MAJOR_VERSION}" >> $GITHUB_ENV
           else
-            echo "Invalid release version format: ${RELEASE_VERSION}"
+            echo "Invalid release version format: ${env.tag}"
             exit 1
           fi
 
@@ -76,7 +65,7 @@ jobs:
           echo "LATEST_MINOR=${LATEST_MINOR}" >> $GITHUB_ENV
 
       - name: Delete old minor versions except the last
-        if: startsWith(env.RELEASE_VERSION, 'v')
+        if: startsWith(env.tag, 'v')
         run: |
           for TAG in $TAGS; do
             if [ "$TAG" != "$LATEST_MINOR" ]; then
@@ -96,7 +85,7 @@ jobs:
           echo "Releases found: $RELEASES"
 
       - name: Delete old releases except the last
-        if: startsWith(env.RELEASE_VERSION, 'v')
+        if: startsWith(env.tag, 'v')
         run: |
           for RELEASE in $RELEASES; do
             if [ "$RELEASE" != "$LATEST_MINOR" ]; then
