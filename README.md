@@ -30,7 +30,7 @@ TODO comments, and resolving issues when TODOs are removed from the code.
            uses: actions/checkout@v3
 
          - name: Manage TODO comments
-           uses: datenwissenschaften/manage-todos-action@v1.0.1
+           uses: datenwissenschaften/manage-todos-action@v1.0.2
            with:
              github-token: ${{ secrets.GITHUB_TOKEN }}
              labels: "todo, help wanted"

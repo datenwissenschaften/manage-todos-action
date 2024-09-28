@@ -2,6 +2,9 @@
 
 set -e
 
+# Configure Git to treat the current workspace as a safe directory inside the Docker container
+git config --global --add safe.directory /github/workspace
+
 # Define a temporary file to store TODO comments
 TODO_FILE="todos.txt"
 
