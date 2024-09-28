@@ -1,10 +1,10 @@
-name: Test Manage TODOs Action
+name: Test Action
 
 on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:  # Allows you to manually trigger the workflow
+  workflow_run:
+    workflows: ["Squash Commits After Tag"]
+    types:
+      - completed
 
 permissions:
   contents: write

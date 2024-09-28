@@ -2,9 +2,9 @@ name: Squash Commits After Tag
 
 on:
   workflow_run:
-    workflows: ["Increment Release Version"]  # Name of the first workflow
+    workflows: ["Increment Release Version"]
     types:
-      - completed  # Trigger this workflow when the first workflow completes
+      - completed
 
 permissions:
   contents: write  # Grants permission to modify repository content
