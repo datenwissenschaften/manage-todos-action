@@ -1,0 +1,52 @@
+name: Test Manage TODOs Action
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # Allows you to manually trigger the workflow
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  test-manage-todos:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install requests
+
+      - name: Create test environment
+        run: |
+          # Create a test directory with some sample files
+          mkdir -p src/datenwissenschaften
+          echo "// TODO: Fix the bug in logic" > src/datenwissenschaften/data.service.ts
+          echo "// TODO: Optimize the calculation" > src/datenwissenschaften/science.service.ts
+          
+          # Initialize a new git repository to test git blame
+          git init
+          git add .
+          git commit -m "Initial commit with TODOs"
+
+      - name: Run Manage TODO Comments Action
+        uses: ./  # Uses the local action definition in the current repository
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          labels: "todo, help wanted"
+
+      - name: Verify results
+        run: |
+          # Check that issues were created
+          echo "Verifying that the issues were created and TODOs were updated"
+          # Add verification steps here, such as checking the issue list or output logs

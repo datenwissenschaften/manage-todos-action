@@ -1,0 +1,20 @@
+name: "Manage TODO Comments"
+description: "Automatically open GitHub issues for TODO comments, append issue IDs, and resolve issues when TODOs are removed."
+author: "datenwissenschaften"
+inputs:
+  github-token:
+    description: "GitHub Token for authentication"
+    required: true
+  labels:
+    description: "Comma-separated list of labels to apply to issues (e.g., 'bug,enhancement')"
+    required: false
+    default: ""
+runs:
+  using: "docker"
+  image: "Dockerfile"
+  env:
+    GITHUB_TOKEN: ${{ inputs.github-token }}
+    LABELS: ${{ inputs.labels }}
+branding:
+  icon: "check-circle"
+  color: "green"
