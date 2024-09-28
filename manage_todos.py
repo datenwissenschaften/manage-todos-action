@@ -9,7 +9,7 @@ LABELS = os.getenv("LABELS", "")
 REPO = os.getenv("GITHUB_REPOSITORY")
 FILES_TO_SEARCH = ["./"]
 FILE_ENDINGS = [".ts"]
-KEY_WORD = "// TODO"
+KEY_WORDS = ["// TODO", "//TODO"]
 
 # Prepare labels in a correct format as a list of strings
 labels_list = [label.strip() for label in LABELS.split(",") if label.strip()]
@@ -18,13 +18,13 @@ labels_list = [label.strip() for label in LABELS.split(",") if label.strip()]
 # Define a function to find TODO comments with line numbers
 def find_todos():
     todos = []
-    for filepath in FILES_TO_SEARCH:
-        # Run grep to find TODO comments with line numbers
-        result = subprocess.run(
-            ["grep", "-rn", KEY_WORD, filepath], capture_output=True, text=True
-        )
-        todos.extend(result.stdout.strip().split("\n"))
-        # todos = [todo for todo in todos if todo.endswith(tuple(FILE_ENDINGS))]
+    for key_word in KEY_WORDS:
+        for filepath in FILES_TO_SEARCH:
+            # Run grep to find TODO comments with line numbers
+            result = subprocess.run(
+                ["grep", "-rn", key_word, filepath], capture_output=True, text=True
+            )
+            todos.extend(result.stdout.strip().split("\n"))
     return [todo for todo in todos if todo]  # Filter out empty lines
 
 
