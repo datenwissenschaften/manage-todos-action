@@ -1,10 +1,10 @@
 name: Squash Commits After Tag
 
 on:
-  create:
-    tags:   # Runs when a tag is created; useful to run after tagging a release
-
-  workflow_dispatch:    # Allows manual triggering for testing
+  workflow_run:
+    workflows: ["First Workflow"]  # Name of the first workflow
+    types:
+      - completed  # Trigger this workflow when the first workflow completes
 
 permissions:
   contents: write  # Grants permission to modify repository content
