@@ -2,11 +2,18 @@
 
 set -e
 
-# Find TODO comments
-grep -r "//TODO:" . > todos.txt || true
+# Define a temporary file to store TODO comments
+TODO_FILE="todos.txt"
+
+# Find all TODO comments, excluding the file where results are saved
+grep -r "// TODO:" . --exclude="$TODO_FILE" > "$TODO_FILE" || true
+grep -r "//TODO:" . --exclude="$TODO_FILE" >> "$TODO_FILE" || true
+grep -r "# TODO:" . --exclude="$TODO_FILE" >> "$TODO_FILE" || true
+grep -r "#TODO:" . --exclude="$TODO_FILE" >> "$TODO_FILE" || true
+
 
 # Exit if no TODO comments are found
-if [ ! -s todos.txt ]; then
+if [ ! -s "$TODO_FILE" ]; then
     echo "No TODOs found."
     exit 0
 fi
@@ -49,7 +56,7 @@ while IFS= read -r line; do
             sed -i "s|$CONTENT|$CONTENT [#$ISSUE_NUMBER]|" "$FILE"
         fi
     fi
-done < todos.txt
+done < "$TODO_FILE"
 
 # Commit the updated TODOs
 git config --global user.name "GitHub Action"
