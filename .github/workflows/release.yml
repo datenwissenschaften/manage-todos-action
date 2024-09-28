@@ -22,7 +22,6 @@ jobs:
       - name: Get the latest release tag
         id: get_latest
         run: |
-          # Fetch the latest tag
           latest_tag=$(git describe --tags $(git rev-list --tags --max-count=1))
           echo "Latest tag: $latest_tag"
           echo "tag=$latest_tag" >> $GITHUB_ENV
@@ -30,33 +29,34 @@ jobs:
       - name: Increment patch version
         id: increment
         run: |
-          # Extract version numbers
           version=${tag#v}
           IFS='.' read -r major minor patch <<< "$version"
-
-          # Increment the patch number
           patch=$((patch + 1))
           new_version="v$major.$minor.$patch"
-
           echo "New version: $new_version"
           echo "new_tag=$new_version" >> $GITHUB_ENV
 
       - name: Set Git user identity based on repository owner
         run: |
-          # Set Git user configuration using the repository owner's GitHub username
           git config --global user.name "${{ github.actor }}"
-          # Set email using GitHub's noreply email format
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+
+      - name: Print current README.md content
+        run: cat README.md
 
       - name: Update version number in README.md
         run: |
           version=${{ env.new_tag }}
           version_number=${version#v}
-
           sed -i "s|uses: datenwissenschaften/manage-todos-action@v[0-9.]*|uses: datenwissenschaften/manage-todos-action@$version_number|" README.md
+          cat README.md # Print the updated README.md to verify the changes
+          git status
+          git diff
 
+      - name: Commit and push changes
+        run: |
           git add README.md
-          git commit -m "Update README.md with version $version_number"
+          git commit -m "Update README.md with version $version_number" || echo "Nothing to commit"
           git push origin main --force
 
       - name: Create a new release
