@@ -6,6 +6,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
   increment-version:
     runs-on: ubuntu-latest
@@ -42,6 +45,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ env.new_tag }}
-          releaseName: ${{ env.new_tag }}
+          name: ${{ env.new_tag }}
           draft: false
           prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
