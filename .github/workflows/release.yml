@@ -1,0 +1,41 @@
+name: Increment Release Version
+
+on:
+  workflow_dispatch:  # This allows you to trigger the workflow manually from the GitHub Actions tab
+
+jobs:
+  increment-version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+
+      - name: Get latest release tag
+        id: get_latest
+        run: |
+          latest_tag=$(git describe --tags `git rev-list --tags --max-count=1`)
+          echo "Latest tag: $latest_tag"
+          echo "tag=$latest_tag" >> $GITHUB_ENV
+
+      - name: Increment patch version
+        id: increment
+        run: |
+          # Extract version numbers
+          version=${tag#v}
+          IFS='.' read -r major minor patch <<< "$version"
+
+          # Increment the patch number
+          patch=$((patch + 1))
+          new_version="v$major.$minor.$patch"
+
+          echo "New version: $new_version"
+          echo "new_tag=$new_version" >> $GITHUB_ENV
+
+      - name: Create a new release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ env.new_tag }}
+          releaseName: ${{ env.new_tag }}
+          draft: false
+          prerelease: false
