@@ -8,9 +8,9 @@ git config --global --add safe.directory /github/workspace
 # Define a temporary file to store TODO comments
 TODO_FILE="todos.txt"
 
-# Find all TODO comments, excluding the file where results are saved
-grep -r "// TODO:" . --exclude="$TODO_FILE" > "$TODO_FILE" || true
-grep -r "//TODO:" . --exclude="$TODO_FILE" >> "$TODO_FILE" || true
+# Find all TODO comments with line numbers, excluding the file where results are saved
+grep -rn "// TODO:" . --exclude="$TODO_FILE" > "$TODO_FILE" || true
+grep -rn "//TODO:" . --exclude="$TODO_FILE" >> "$TODO_FILE" || true
 
 # Exit if no TODO comments are found
 if [ ! -s "$TODO_FILE" ]; then
@@ -26,7 +26,7 @@ cat "$TODO_FILE"
 
 # Loop through each TODO and manage issues
 while IFS= read -r line; do
-    # Extract the file, line number, and content. Adjust parsing if line structure differs.
+    # Extract the file, line number, and content using regex to ensure correct parsing
     FILE=$(echo "$line" | cut -d ':' -f 1)
     LINE_NUMBER=$(echo "$line" | cut -d ':' -f 2 | tr -d ' ')
     CONTENT=$(echo "$line" | cut -d ':' -f 3-)
