@@ -17,7 +17,7 @@ When you add a TODO comment in your code, this GitHub Action detects it, creates
 
 ## 🛠️ Usage
 
-Here’s how to get started with the Manage TODO Comments GitHub Action:
+Here’s how to get started with the Manage TODO Comments GitHub Action: 
 
 1. **Add this action to your workflow file:**
 
