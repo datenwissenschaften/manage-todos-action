@@ -20,11 +20,9 @@ jobs:
           sudo apt-get install -y gh
 
       - name: Authenticate GitHub CLI
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Authenticate using GITHUB_TOKEN
-          echo $GITHUB_TOKEN | gh auth login --with-token
+          # Authenticate GitHub CLI using the token directly without environment variable conflicts
+          gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
 
       - name: Get the current release version
         run: |
