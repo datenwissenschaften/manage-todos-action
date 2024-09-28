@@ -41,7 +41,7 @@ jobs:
           echo "New version: $new_version"
           echo "new_tag=$new_version" >> $GITHUB_ENV
 
-      - name: Update version number in README.txt
+      - name: Update version number in README.md
         run: |
           version=${{ env.new_tag }}
           version_number=${version#v}
