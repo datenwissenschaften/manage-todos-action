@@ -2,7 +2,7 @@ name: Clean Up Old Minor Versions
 
 on:
   workflow_run:
-    workflows: [ "Test Action" ]
+    workflows: ["Test Action"]
     types:
       - completed
 
@@ -13,8 +13,18 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v3
 
-      - name: Set up GitHub CLI
-        uses: cli/cli-action@v2
+      - name: Install GitHub CLI
+        run: |
+          # Install GitHub CLI
+          sudo apt-get update
+          sudo apt-get install -y gh
+
+      - name: Authenticate GitHub CLI
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Authenticate using GITHUB_TOKEN
+          echo $GITHUB_TOKEN | gh auth login --with-token
 
       - name: Get the current release version
         run: |
