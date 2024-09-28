@@ -2,7 +2,7 @@ name: Squash Commits After Tag
 
 on:
   workflow_run:
-    workflows: ["First Workflow"]  # Name of the first workflow
+    workflows: ["Increment Release Version"]  # Name of the first workflow
     types:
       - completed  # Trigger this workflow when the first workflow completes
 
