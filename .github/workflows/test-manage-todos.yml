@@ -65,6 +65,27 @@ jobs:
           cat src/datenwissenschaften/data.service.ts
           cat src/datenwissenschaften/science.service.ts
 
+      - name: Verify issue numbers are attached to TODO comments
+        run: |
+          # Check modified files to verify issue numbers are attached
+          echo "Verifying that issue numbers are correctly attached to TODO comments"
+
+          # Define files to check
+          files=("src/datenwissenschaften/data.service.ts" "src/datenwissenschaften/science.service.ts")
+
+          for file in "${files[@]}"; do
+            echo "Checking $file"
+            cat "$file"
+
+            # Check if TODO comments contain an issue number
+            if grep -q "// TODO.*\[#\d+\]" "$file"; then
+              echo "TODO comment in $file has an issue number attached."
+            else
+              echo "Error: TODO comment in $file does not have an issue number attached." >&2
+              exit 1
+            fi
+          done
+
       - name: Close all created issues
         run: |
           echo "Closing all issues created by the action"
