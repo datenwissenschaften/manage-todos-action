@@ -8,6 +8,7 @@ GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 LABELS = os.getenv("LABELS", "")
 REPO = os.getenv("GITHUB_REPOSITORY")
 FILES_TO_SEARCH = ["./"]
+FILE_ENDINGS = [".ts"]
 KEY_WORD = "// TODO"
 
 # Prepare labels in a correct format as a list of strings
@@ -22,6 +23,7 @@ def find_todos():
             ["grep", "-rn", KEY_WORD, filepath], capture_output=True, text=True
         )
         todos.extend(result.stdout.strip().split("\n"))
+        todos = [todo for todo in todos if todo.endswith(tuple(FILE_ENDINGS))]
     return [todo for todo in todos if todo]  # Filter out empty lines
 
 # Function to extract author of a specific line using git blame
