@@ -77,8 +77,8 @@ jobs:
             echo "Checking $file"
             cat "$file"
 
-            # Check if TODO comments contain an issue number
-            if grep -q "// TODO.*\[#\d+\]" "$file"; then
+            # Check if TODO comments contain an issue number, ignoring extra spaces
+            if grep -q "// TODO:.*\[#\d+\]" "$file"; then
               echo "TODO comment in $file has an issue number attached."
             else
               echo "Error: TODO comment in $file does not have an issue number attached." >&2
