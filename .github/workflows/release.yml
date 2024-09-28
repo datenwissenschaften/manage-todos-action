@@ -1,7 +1,10 @@
 name: Increment Release Version
 
 on:
-  workflow_dispatch:  # This allows you to trigger the workflow manually from the GitHub Actions tab
+  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
   increment-version:
