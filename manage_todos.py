@@ -14,6 +14,7 @@ KEY_WORD = "// TODO"
 # Prepare labels in a correct format as a list of strings
 labels_list = [label.strip() for label in LABELS.split(",") if label.strip()]
 
+
 # Define a function to find TODO comments with line numbers
 def find_todos():
     todos = []
@@ -26,6 +27,7 @@ def find_todos():
         # todos = [todo for todo in todos if todo.endswith(tuple(FILE_ENDINGS))]
     return [todo for todo in todos if todo]  # Filter out empty lines
 
+
 # Function to extract author of a specific line using git blame
 def get_author(filepath, line_number):
     result = subprocess.run(
@@ -35,6 +37,7 @@ def get_author(filepath, line_number):
     )
     author_match = re.search(r"^author (.+)$", result.stdout, re.MULTILINE)
     return author_match.group(1) if author_match else "Unknown Author"
+
 
 # Function to create a GitHub issue
 def create_github_issue(title, description):
@@ -57,10 +60,16 @@ def create_github_issue(title, description):
         print(f"Failed to create an issue. Response: {response.json()}")
         return None
 
+
 # Main function to process TODO comments
 def process_todos():
     todos = find_todos()
     for line in todos:
+        # Skip if file is not of the specified type
+        if not line.endswith(tuple(FILE_ENDINGS)):
+            print(f"Skipping file: {line}")
+            continue
+
         # Extract filepath, line number, and content
         match = re.match(r"^(.*):(\d+):(.*)$", line)
         if not match:
@@ -105,6 +114,7 @@ def process_todos():
             lines[line_number - 1] = f"{lines[line_number - 1].strip()} [#{issue_number}]\n"
             with open(filepath, "w") as file:
                 file.writelines(lines)
+
 
 # Run the main function
 if __name__ == "__main__":
