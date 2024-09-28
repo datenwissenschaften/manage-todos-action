@@ -65,30 +65,44 @@ jobs:
           cat src/datenwissenschaften/data.service.ts
           cat src/datenwissenschaften/science.service.ts
 
-      - name: Verify issue numbers are attached to TODO comments
+      - name: Verify issue numbers are attached to TODO comments using Python
         run: |
-          # Check modified files to verify issue numbers are attached
-          echo "Verifying that issue numbers are correctly attached to TODO comments"
-
+          # Verification script to check issue numbers are correctly attached
+          python - <<EOF
+          import re
+          
           # Define files to check
-          files=("src/datenwissenschaften/data.service.ts" "src/datenwissenschaften/science.service.ts")
-
-          for file in "${files[@]}"; do
-            echo "Checking $file"
-            cat "$file"
-
-            # Output the matching lines for debugging purposes
-            echo "Matching lines with issue numbers:"
-            grep -E "// TODO:.*\[#\d+\]" "$file" || echo "No matches found."
-
-            # Use grep to ensure the TODO comment contains the expected pattern with an issue number
-            if grep -Eq "// TODO:.*\[#\d+\]" "$file"; then
-              echo "TODO comment in $file has an issue number attached."
-            else
-              echo "Error: TODO comment in $file does not have an issue number attached." >&2
-              exit 1
-            fi
-          done
+          files = ["src/datenwissenschaften/data.service.ts", "src/datenwissenschaften/science.service.ts"]
+          
+          # Function to check if issue numbers are correctly attached
+          def check_todo_issues(file_path):
+              with open(file_path, "r") as file:
+                  lines = file.readlines()
+          
+              # Flag to track if TODO comments have issue numbers attached
+              issue_number_attached = False
+          
+              for line in lines:
+                  # Search for TODO comments with attached issue numbers
+                  if re.search(r"// TODO:.*\[#\d+\]", line):
+                      print(f"Found TODO with issue number in {file_path}: {line.strip()}")
+                      issue_number_attached = True
+                  elif "// TODO" in line:
+                      print(f"Error: TODO comment without issue number in {file_path}: {line.strip()}")
+                      issue_number_attached = False
+                      break
+          
+              if not issue_number_attached:
+                  print(f"Verification failed: Not all TODO comments in {file_path} have issue numbers attached.")
+                  exit(1)
+          
+          # Check each file
+          for file in files:
+              print(f"Checking {file}")
+              check_todo_issues(file)
+          
+          print("Verification successful: All TODO comments have issue numbers attached.")
+          EOF
 
       - name: Close all created issues
         run: |
