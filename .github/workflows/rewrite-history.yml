@@ -57,6 +57,17 @@ jobs:
           git branch -M main  # Change 'main' if it's another branch
           git push origin main --force  # Force push to overwrite history
 
+      - name: Update version number in README.txt
+        run: |
+          version=${{ env.tag }}
+          version_number=${version#v}
+          
+          sed -i "s|uses: datenwissenschaften/manage-todos-action@v[0-9.]*|uses: datenwissenschaften/manage-todos-action@$version_number|" README.md
+
+          git add README.md
+          git commit -m "Update README.md with version $version_number"
+          git push origin main --force
+
       - name: Verify the squashed commit
         run: |
           # Output the current state of the branch to verify the squash
