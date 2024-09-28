@@ -26,9 +26,16 @@ cat "$TODO_FILE"
 
 # Loop through each TODO and manage issues
 while IFS= read -r line; do
+    # Extract the file, line number, and content. Adjust parsing if line structure differs.
     FILE=$(echo "$line" | cut -d ':' -f 1)
-    LINE_NUMBER=$(echo "$line" | cut -d ':' -f 2)
+    LINE_NUMBER=$(echo "$line" | cut -d ':' -f 2 | tr -d ' ')
     CONTENT=$(echo "$line" | cut -d ':' -f 3-)
+
+    # Validate LINE_NUMBER to ensure it is numeric, otherwise skip
+    if ! [[ "$LINE_NUMBER" =~ ^[0-9]+$ ]]; then
+        echo "Skipping invalid line number: $LINE_NUMBER in $FILE"
+        continue
+    fi
 
     echo "Processing TODO: $CONTENT in $FILE at line $LINE_NUMBER"
 
