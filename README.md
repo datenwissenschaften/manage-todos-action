@@ -21,6 +21,10 @@ TODO comments, and resolving issues when TODOs are removed from the code.
      push:
        branches:
          - main
+   
+   permissions:
+      contents: write  # Required for pushing changes back to the repo
+      issues: write    # Required to create issues
 
    jobs:
      manage-todos:
