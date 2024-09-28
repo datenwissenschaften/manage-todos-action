@@ -49,7 +49,7 @@ jobs:
         run: |
           version=${{ env.new_tag }}
           version_number=${version#v}
-          sed -i "s|uses: datenwissenschaften/manage-todos-action@[0-9.]*|uses: datenwissenschaften/manage-todos-action@$version_number|" README.md
+          sed -i "s|uses: datenwissenschaften/manage-todos-action@[0-9.]*|uses: datenwissenschaften/manage-todos-action@v$version_number|" README.md
           
           # Print the updated README.md to verify the changes
           grep 'uses: datenwissenschaften/manage-todos-action@' README.md || echo "Replacement failed"
