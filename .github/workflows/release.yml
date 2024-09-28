@@ -41,17 +41,18 @@ jobs:
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
 
-      - name: Print current README.md content
-        run: cat README.md
+      - name: Print current README.md content before replacement
+        run: |
+          grep 'uses: datenwissenschaften/manage-todos-action@' README.md || echo "Pattern not found"
 
       - name: Update version number in README.md
         run: |
           version=${{ env.new_tag }}
           version_number=${version#v}
-          sed -i "s|uses: datenwissenschaften/manage-todos-action@v[0-9.]*|uses: datenwissenschaften/manage-todos-action@$version_number|" README.md
-          cat README.md # Print the updated README.md to verify the changes
-          git status
-          git diff
+          sed -i "s|uses: datenwissenschaften/manage-todos-action@[0-9.]*|uses: datenwissenschaften/manage-todos-action@$version_number|" README.md
+          
+          # Print the updated README.md to verify the changes
+          grep 'uses: datenwissenschaften/manage-todos-action@' README.md || echo "Replacement failed"
 
       - name: Commit and push changes
         run: |
