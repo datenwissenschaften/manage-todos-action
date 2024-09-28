@@ -9,9 +9,8 @@ LABELS = os.getenv("LABELS", "")
 REPO = os.getenv("GITHUB_REPOSITORY")
 FILES_TO_SEARCH = ["./"]  # Adjust as needed to target specific directories or files
 
-# Prepare labels in JSON format for GitHub API
-labels_list = LABELS.split(",") if LABELS else []
-labels_json = str(labels_list).replace("'", '"')
+# Prepare labels in a correct format as a list of strings
+labels_list = [label.strip() for label in LABELS.split(",") if label.strip()]
 
 # Define a function to find TODO comments with line numbers
 def find_todos():
@@ -44,7 +43,7 @@ def create_github_issue(title, description):
     payload = {
         "title": title,
         "body": description,
-        "labels": labels_list
+        "labels": labels_list  # Correctly formatted labels list
     }
     response = requests.post(url, headers=headers, json=payload)
     if response.status_code == 201:
