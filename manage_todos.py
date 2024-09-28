@@ -7,7 +7,8 @@ import requests
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 LABELS = os.getenv("LABELS", "")
 REPO = os.getenv("GITHUB_REPOSITORY")
-FILES_TO_SEARCH = ["./"]  # Adjust as needed to target specific directories or files
+FILES_TO_SEARCH = ["./"]
+KEY_WORD = "// TODO"
 
 # Prepare labels in a correct format as a list of strings
 labels_list = [label.strip() for label in LABELS.split(",") if label.strip()]
@@ -18,7 +19,7 @@ def find_todos():
     for filepath in FILES_TO_SEARCH:
         # Run grep to find TODO comments with line numbers
         result = subprocess.run(
-            ["grep", "-rn", "//TODO", filepath], capture_output=True, text=True
+            ["grep", "-rn", KEY_WORD, filepath], capture_output=True, text=True
         )
         todos.extend(result.stdout.strip().split("\n"))
     return [todo for todo in todos if todo]  # Filter out empty lines
