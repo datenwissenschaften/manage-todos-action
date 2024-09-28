@@ -41,6 +41,13 @@ jobs:
           echo "New version: $new_version"
           echo "new_tag=$new_version" >> $GITHUB_ENV
 
+      - name: Set Git user identity based on repository owner
+        run: |
+          # Set Git user configuration using the repository owner's GitHub username
+          git config --global user.name "${{ github.actor }}"
+          # Set email using GitHub's noreply email format
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+
       - name: Update version number in README.md
         run: |
           version=${{ env.new_tag }}
