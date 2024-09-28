@@ -2,7 +2,7 @@ name: Test Action
 
 on:
   workflow_run:
-    workflows: ["Squash Commits After Tag"]
+    workflows: ["Increment Release Version"]
     types:
       - completed
 
