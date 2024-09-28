@@ -2,7 +2,7 @@ name: Test Action
 
 on:
   workflow_run:
-    workflows: ["Increment Release Version"]
+    workflows: [ "Increment Release Version" ]
     types:
       - completed
 
@@ -45,13 +45,22 @@ jobs:
           git commit -m "Initial commit with TODOs"
 
       - name: Run Manage TODO Comments Action
-        uses: ./  # Uses the local action definition in the current repository
+        uses: ./
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           labels: "todo, help wanted"
 
       - name: Verify results
         run: |
-          # Check that issues were created
           echo "Verifying that the issues were created and TODOs were updated"
-          # Add verification steps here, such as checking the issue list or output logs
+
+          # Check if the issues are created by listing the last 5 issues
+          echo "Listing recent issues:"
+          curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+               -H "Accept: application/vnd.github.v3+json" \
+               https://api.github.com/repos/${{ github.repository }}/issues?per_page=5
+
+          # Check the files for updated TODO comments with issue numbers
+          echo "Checking the modified files:"
+          cat src/datenwissenschaften/data.service.ts
+          cat src/datenwissenschaften/science.service.ts
