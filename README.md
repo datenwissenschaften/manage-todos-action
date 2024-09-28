@@ -41,7 +41,7 @@ Here’s how to get started with the Manage TODO Comments GitHub Action:
            uses: actions/checkout@v3
 
          - name: Manage TODO comments
-           uses: datenwissenschaften/manage-todos-action@v1.0.29v1.0.28v1.0.27v1.0.26v1.0.25
+           uses: datenwissenschaften/manage-todos-action@v1.0.30v1.0.29v1.0.28v1.0.27v1.0.26v1.0.25
            with:
              github-token: ${{ secrets.GITHUB_TOKEN }}
              labels: "todo, help wanted"
