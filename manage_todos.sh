@@ -11,9 +11,6 @@ TODO_FILE="todos.txt"
 # Find all TODO comments, excluding the file where results are saved
 grep -r "// TODO:" . --exclude="$TODO_FILE" > "$TODO_FILE" || true
 grep -r "//TODO:" . --exclude="$TODO_FILE" >> "$TODO_FILE" || true
-grep -r "# TODO:" . --exclude="$TODO_FILE" >> "$TODO_FILE" || true
-grep -r "#TODO:" . --exclude="$TODO_FILE" >> "$TODO_FILE" || true
-
 
 # Exit if no TODO comments are found
 if [ ! -s "$TODO_FILE" ]; then
@@ -24,28 +21,23 @@ fi
 # Convert labels input into JSON array format
 LABELS_JSON=$(echo "$LABELS" | jq -R 'split(",")')
 
+echo "Detected TODO comments:"
+cat "$TODO_FILE"
+
 # Loop through each TODO and manage issues
 while IFS= read -r line; do
     FILE=$(echo "$line" | cut -d ':' -f 1)
     CONTENT=$(echo "$line" | cut -d ':' -f 2-)
 
+    echo "Processing TODO: $CONTENT in $FILE"
+
     # Check if TODO already has an issue number
     if [[ "$CONTENT" =~ \[#([0-9]+)\] ]]; then
         ISSUE_NUMBER=${BASH_REMATCH[1]}
-        # Check the status of the issue
-        ISSUE_STATUS=$(curl -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github.v3+json" \
-          https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/$ISSUE_NUMBER | jq -r .state)
-
-        # Close the issue if the TODO is removed
-        if [[ "$ISSUE_STATUS" == "open" ]] && ! grep -qF "$CONTENT" "$FILE"; then
-            curl -X PATCH \
-              -H "Authorization: token $GITHUB_TOKEN" \
-              -H "Accept: application/vnd.github.v3+json" \
-              https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/$ISSUE_NUMBER \
-              -d "{\"state\": \"closed\", \"body\": \"Resolved: TODO removed from code.\"}"
-        fi
+        echo "TODO already linked to issue #$ISSUE_NUMBER."
     else
         # Create a new GitHub issue for new TODOs
+        echo "Creating a new issue for TODO: $CONTENT"
         ISSUE_RESPONSE=$(curl -X POST \
           -H "Authorization: token $GITHUB_TOKEN" \
           -H "Accept: application/vnd.github.v3+json" \
@@ -54,9 +46,13 @@ while IFS= read -r line; do
 
         ISSUE_NUMBER=$(echo $ISSUE_RESPONSE | jq -r .number)
 
-        # Append the issue number to the TODO line if the issue was created
+        # Check if the issue was created successfully
         if [ "$ISSUE_NUMBER" != "null" ]; then
+            echo "Issue created successfully with number #$ISSUE_NUMBER."
+            # Append the issue number to the TODO line
             sed -i "s|$CONTENT|$CONTENT [#$ISSUE_NUMBER]|" "$FILE"
+        else
+            echo "Failed to create an issue. Response: $ISSUE_RESPONSE"
         fi
     fi
 done < "$TODO_FILE"
