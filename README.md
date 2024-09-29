@@ -47,8 +47,6 @@ Here’s how to get started with the Manage TODO Comments GitHub Action:
              labels: "todo, help wanted"
    ```
 
-2. **Ensure you have the `GITHUB_TOKEN` set up in your repository’s secrets** to allow the action to authenticate and perform the necessary operations.
-
 ## 🚦 Why Use This Action?
 
 Managing TODO comments manually is time-consuming and error-prone. This action streamlines the process by:
