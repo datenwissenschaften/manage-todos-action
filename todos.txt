@@ -1,0 +1,8 @@
+./src/datenwissenschaften/data.service.ts:// TODO: Fix the bug in logic
+./src/datenwissenschaften/science.service.ts:// TODO: Optimize the calculation
+./README.md:// TODO: Refactor this function to improve performance.
+./.github/workflows/test.yml:          echo "// TODO: Fix the bug in logic" > src/datenwissenschaften/data.service.ts
+./.github/workflows/test.yml:          echo "// TODO: Optimize the calculation" > src/datenwissenschaften/science.service.ts
+./.github/workflows/test.yml:                  if re.search(r"// TODO:.*\[#\d+\]", line):
+./manage_todos.sh:grep -r "// TODO:" . --exclude="$TODO_FILE" > "$TODO_FILE" || true
+./manage_todos.sh:grep -r "//TODO:" . --exclude="$TODO_FILE" >> "$TODO_FILE" || true
