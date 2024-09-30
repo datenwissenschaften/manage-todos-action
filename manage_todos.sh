@@ -56,7 +56,6 @@ while IFS= read -r line; do
         echo "Creating a new issue for TODO: $CONTENT"
 
         # Create the issue body
-                # Construct the body with actual newlines
         BODY="
 This issue was automatically created to track the TODO comment in the codebase.
 
@@ -64,7 +63,7 @@ Commit Message: $COMMIT_MESSAGE
 
 File: $FILE
 
-TODO: $CONTENT
+$CONTENT
 
 Author: $COMMIT_AUTHOR
 "
