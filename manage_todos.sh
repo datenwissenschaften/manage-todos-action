@@ -41,6 +41,12 @@ while IFS= read -r line; do
 
     echo "Processing TODO: $CONTENT in $FILE"
 
+    # Filter file endings with .ts
+    if [[ "$FILE" != *.ts ]]; then
+        echo "File $FILE is not a TypeScript file, skipping."
+        continue
+    fi
+
     # Check if TODO already has an issue number
     if [[ "$CONTENT" =~ \[#([0-9]+)\] ]]; then
         ISSUE_NUMBER=${BASH_REMATCH[1]}
