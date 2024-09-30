@@ -49,7 +49,7 @@ while IFS= read -r line; do
           -H "Authorization: token $GITHUB_TOKEN" \
           -H "Accept: application/vnd.github.v3+json" \
           https://api.github.com/repos/${GITHUB_REPOSITORY}/issues \
-          -d "{\"title\": \"TODO found in code\", \"body\": \"$CONTENT\", \"labels\": $LABELS_JSON}")
+          -d "{\"title\": \"$CONTENT\", \"body\": \"$CONTENT\", \"labels\": $LABELS_JSON}")
 
         ISSUE_NUMBER=$(echo $ISSUE_RESPONSE | jq -r .number)
 
