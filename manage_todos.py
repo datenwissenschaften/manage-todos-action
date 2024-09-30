@@ -14,6 +14,9 @@ KEY_WORDS = ["// TODO", "//TODO"]
 # Prepare labels in a correct format as a list of strings
 labels_list = [label.strip() for label in LABELS.split(",") if label.strip()]
 
+# Set the safe.directory git config to the GitHub workspace
+subprocess.run(["git", "config", "--global", "--add", "safe.directory", "/github/workspace"])
+
 # Define a function to find TODO comments with line numbers
 def find_todos():
     todos = []
