@@ -49,13 +49,20 @@ while IFS= read -r line; do
         # Create a new GitHub issue for new TODOs
         echo "Creating a new issue for TODO: $CONTENT"
 
+        # Create the issue body
         BODY="This issue was automatically created to track the TODO comment in the codebase.\\n\\nCommit Message: $COMMIT_MESSAGE\\n\\nFile: $FILE\\n\\nTODO: $CONTENT\\n\\nAuthor: $COMMIT_AUTHOR"
+
+        # Escape the TODO content for safe JSON
+        ESCAPED_CONTENT=$(echo "$CONTENT" | jq -R .)
+
+        # Escape the body for safe JSON
+        ESCAPED_BODY=$(echo "$BODY" | jq -sR .)
 
         ISSUE_RESPONSE=$(curl -X POST \
           -H "Authorization: token $GITHUB_TOKEN" \
           -H "Accept: application/vnd.github.v3+json" \
           https://api.github.com/repos/${GITHUB_REPOSITORY}/issues \
-          -d "{\"title\": \"$CONTENT\", \"body\": \"$BODY\", \"labels\": $LABELS_JSON}")
+          -d "{\"title\": \"$ESCAPED_CONTENT\", \"body\": \"$ESCAPED_BODY\", \"labels\": $LABELS_JSON}")
 
         ISSUE_NUMBER=$(echo $ISSUE_RESPONSE | jq -r .number)
 
