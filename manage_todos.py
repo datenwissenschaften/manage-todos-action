@@ -14,8 +14,15 @@ KEY_WORDS = ["// TODO", "//TODO"]
 # Prepare labels in a correct format as a list of strings
 labels_list = [label.strip() for label in LABELS.split(",") if label.strip()]
 
-# Set the safe.directory git config to the GitHub workspace
-subprocess.run(["git", "config", "--global", "--add", "safe.directory", "/github/workspace"])
+# Function to configure Git safe directory (needed for CI environments)
+def configure_git_safe_directory():
+    subprocess.run(["git", "config", "--global", "--add", "safe.directory", "/github/workspace"])
+
+# Function to stage, commit, and push changes
+def commit_and_push_changes(commit_message):
+    subprocess.run(["git", "add", "."], check=True)
+    subprocess.run(["git", "commit", "-m", commit_message], check=True)
+    subprocess.run(["git", "push"], check=True)
 
 # Define a function to find TODO comments with line numbers
 def find_todos():
@@ -79,6 +86,9 @@ def close_github_issue(issue_number, commit_message):
 
 # Main function to process TODO comments
 def process_todos():
+    # Configure Git safe directory for CI environments
+    configure_git_safe_directory()
+
     # Get the current commit message
     commit_message = subprocess.check_output(["git", "log", "-1", "--pretty=%B"]).strip().decode('utf-8')
 
@@ -86,7 +96,7 @@ def process_todos():
     existing_todos = {}
 
     # Read the todos.txt file to load previously tracked TODOs
-    todos_file = ".github/todos.txt"
+    todos_file = "todos.txt"
     if os.path.exists(todos_file):
         with open(todos_file, "r") as file:
             for line in file.readlines():
@@ -164,6 +174,9 @@ def process_todos():
     with open(todos_file, "w") as file:
         for todo in remaining_todos:
             file.write(f"{todo} [#{existing_todos.get(todo, 'NEW')}]\n")
+
+    # Commit and push changes
+    commit_and_push_changes("Update TODO comments with issue numbers")
 
 # Run the main function
 if __name__ == "__main__":
