@@ -39,13 +39,13 @@ while IFS= read -r line; do
     FILE=$(echo "$line" | cut -d ':' -f 1)
     CONTENT=$(echo "$line" | cut -d ':' -f 2-)
 
-    echo "Processing TODO: $CONTENT in $FILE"
-
     # Filter file endings with .ts
     if [[ "$FILE" != *.ts ]]; then
         echo "File $FILE is not a TypeScript file, skipping."
         continue
     fi
+
+    echo "Processing TODO: $CONTENT in $FILE"
 
     # Check if TODO already has an issue number
     if [[ "$CONTENT" =~ \[#([0-9]+)\] ]]; then
@@ -64,11 +64,16 @@ while IFS= read -r line; do
         # Escape the body for safe JSON
         ESCAPED_BODY=$(echo "$BODY" | jq -sR .)
 
+        # JSON payload for the GitHub API
+        JSON_PAYLOAD="{\"title\": $ESCAPED_CONTENT, \"body\": $ESCAPED_BODY, \"labels\": $LABELS_JSON}"
+
+        echo "Creating issue with payload: $JSON_PAYLOAD"
+
         ISSUE_RESPONSE=$(curl -X POST \
           -H "Authorization: token $GITHUB_TOKEN" \
           -H "Accept: application/vnd.github.v3+json" \
           https://api.github.com/repos/${GITHUB_REPOSITORY}/issues \
-          -d "{\"title\": \"$ESCAPED_CONTENT\", \"body\": \"$ESCAPED_BODY\", \"labels\": $LABELS_JSON}")
+          -d "$JSON_PAYLOAD")
 
         ISSUE_NUMBER=$(echo $ISSUE_RESPONSE | jq -r .number)
 
