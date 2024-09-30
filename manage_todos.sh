@@ -56,7 +56,7 @@ while IFS= read -r line; do
         echo "Creating a new issue for TODO: $CONTENT"
 
         # Create the issue body
-        BODY="This issue was automatically created to track the TODO comment in the codebase.\\n\\nCommit Message: $COMMIT_MESSAGE\\n\\nFile: $FILE\\n\\nTODO: $CONTENT\\n\\nAuthor: $COMMIT_AUTHOR"
+        BODY="This issue was automatically created to track the TODO comment in the codebase.\n\nCommit Message: $COMMIT_MESSAGE\n\nFile: $FILE\n\nTODO: $CONTENT\n\nAuthor: $COMMIT_AUTHOR"
 
         # Escape the TODO content for safe JSON
         ESCAPED_CONTENT=$(echo "$CONTENT" | jq -R .)
