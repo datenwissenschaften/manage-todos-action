@@ -1,2 +1,0 @@
-// TODO: Fix the bug in logic [#NEW]
-// TODO: Optimize the calculation [#NEW]
