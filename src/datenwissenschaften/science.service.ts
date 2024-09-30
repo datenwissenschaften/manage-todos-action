@@ -1,1 +1,1 @@
-// TODO: Optimize the calculation [#75]
+// TODO: Optimize the calculation

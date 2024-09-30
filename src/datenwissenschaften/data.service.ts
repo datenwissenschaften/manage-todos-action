@@ -1,1 +1,1 @@
-// TODO: Fix the bug in logic [#74]
+// TODO: Fix the bug in logic
