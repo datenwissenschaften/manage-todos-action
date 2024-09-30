@@ -18,11 +18,24 @@ labels_list = [label.strip() for label in LABELS.split(",") if label.strip()]
 def configure_git_safe_directory():
     subprocess.run(["git", "config", "--global", "--add", "safe.directory", "/github/workspace"])
 
+# Function to configure Git identity (for CI environments)
+def configure_git_identity():
+    subprocess.run(["git", "config", "--global", "user.name", "GitHub Action"], check=True)
+    subprocess.run(["git", "config", "--global", "user.email", "actions@github.com"], check=True)
+
+# Function to check if there are staged changes
+def has_staged_changes():
+    result = subprocess.run(["git", "diff", "--cached", "--exit-code"], capture_output=True)
+    return result.returncode != 0  # Return True if there are changes
+
 # Function to stage, commit, and push changes
 def commit_and_push_changes(commit_message):
     subprocess.run(["git", "add", "."], check=True)
-    subprocess.run(["git", "commit", "-m", commit_message], check=True)
-    subprocess.run(["git", "push"], check=True)
+    if has_staged_changes():
+        subprocess.run(["git", "commit", "-m", commit_message], check=True)
+        subprocess.run(["git", "push"], check=True)
+    else:
+        print("No changes to commit.")
 
 # Define a function to find TODO comments with line numbers
 def find_todos():
@@ -86,8 +99,9 @@ def close_github_issue(issue_number, commit_message):
 
 # Main function to process TODO comments
 def process_todos():
-    # Configure Git safe directory for CI environments
+    # Configure Git safe directory and identity for CI environments
     configure_git_safe_directory()
+    configure_git_identity()
 
     # Get the current commit message
     commit_message = subprocess.check_output(["git", "log", "-1", "--pretty=%B"]).strip().decode('utf-8')
