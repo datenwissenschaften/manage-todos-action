@@ -59,11 +59,11 @@ while IFS= read -r line; do
         BODY="
 This issue was automatically created to track the TODO comment in the codebase.
 
+$CONTENT
+
 Commit Message: $COMMIT_MESSAGE
 
 File: $FILE
-
-$CONTENT
 
 Author: $COMMIT_AUTHOR
 "
