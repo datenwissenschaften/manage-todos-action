@@ -22,8 +22,8 @@ if [ ! -s "$TODO_FILE" ]; then
     exit 0
 fi
 
-# Convert labels input into JSON array format
-LABELS_JSON=$(echo "$LABELS" | jq -R 'split(",")')
+# Convert labels input into JSON array format, trim any leading/trailing spaces
+LABELS_JSON=$(echo "$LABELS" | tr ',' '\n' | sed 's/^[ \t]*//;s/[ \t]*$//' | jq -R . | jq -s .)
 
 # Get the latest commit message to use when closing issues
 COMMIT_MESSAGE=$(git log -1 --pretty=%B)
@@ -66,7 +66,6 @@ while IFS= read -r line; do
 
         # JSON payload for the GitHub API
         JSON_PAYLOAD="{\"title\": $ESCAPED_CONTENT, \"body\": $ESCAPED_BODY, \"labels\": $LABELS_JSON}"
-
         echo "Creating issue with payload: $JSON_PAYLOAD"
 
         ISSUE_RESPONSE=$(curl -X POST \
