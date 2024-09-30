@@ -1,8 +1,13 @@
-FROM python:3.9-slim
+FROM ubuntu:latest
 
-RUN apt-get update && apt-get install -y git grep curl jq
-RUN pip install requests
+# Install necessary dependencies
+RUN apt-get update && apt-get install -y jq git curl
 
-COPY manage_todos.py /manage_todos.py
+# Copy the action script
+COPY manage_todos.sh /manage_todos.sh
 
-ENTRYPOINT ["python3", "/manage_todos.py"]
+# Make the script executable
+RUN chmod +x /manage_todos.sh
+
+# Set the entry point for the action
+ENTRYPOINT ["/manage_todos.sh"]
