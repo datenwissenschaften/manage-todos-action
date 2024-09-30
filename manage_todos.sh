@@ -28,6 +28,9 @@ LABELS_JSON=$(echo "$LABELS" | jq -R 'split(",")')
 # Get the latest commit message to use when closing issues
 COMMIT_MESSAGE=$(git log -1 --pretty=%B)
 
+# Get the author of the latest commit
+COMMIT_AUTHOR=$(git log -1 --pretty=%an)
+
 echo "Detected TODO comments:"
 cat "$TODO_FILE"
 
@@ -46,7 +49,7 @@ while IFS= read -r line; do
         # Create a new GitHub issue for new TODOs
         echo "Creating a new issue for TODO: $CONTENT"
 
-        BODY="This issue was automatically created to track the TODO comment in the codebase.\\n\\nCommit Message: $COMMIT_MESSAGE\\n\\nFile: $FILE\\n\\nTODO: $CONTENT"
+        BODY="This issue was automatically created to track the TODO comment in the codebase.\\n\\nCommit Message: $COMMIT_MESSAGE\\n\\nFile: $FILE\\n\\nTODO: $CONTENT\\n\\nAuthor: $COMMIT_AUTHOR"
 
         ISSUE_RESPONSE=$(curl -X POST \
           -H "Authorization: token $GITHUB_TOKEN" \
