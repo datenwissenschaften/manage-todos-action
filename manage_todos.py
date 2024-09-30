@@ -83,7 +83,7 @@ def process_todos():
     existing_todos = {}
 
     # Read the todos.txt file to load previously tracked TODOs
-    todos_file = "todos.txt"
+    todos_file = ".github/todos.txt"
     if os.path.exists(todos_file):
         with open(todos_file, "r") as file:
             for line in file.readlines():
