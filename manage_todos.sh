@@ -106,12 +106,29 @@ if [ -f "$TODO_FILE" ]; then
             if ! grep -q "\[$ISSUE_NUMBER\]" "$TODO_FILE"; then
                 echo "TODO with issue #$ISSUE_NUMBER has been removed, closing the issue."
 
-                # Close the issue on GitHub
+                # Get the current issue body from GitHub
+                CURRENT_ISSUE_BODY=$(curl -s \
+                  -H "Authorization: token $GITHUB_TOKEN" \
+                  -H "Accept: application/vnd.github.v3+json" \
+                  https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/$ISSUE_NUMBER | jq -r .body)
+
+                # Append the closure message to the current issue body
+                UPDATED_BODY="
+$CURRENT_ISSUE_BODY
+
+### UPDATE
+
+Issue closed because the TODO was removed.
+
+Commit Message: $COMMIT_MESSAGE
+"
+
+                # Close the issue on GitHub with the updated body
                 curl -X PATCH \
                   -H "Authorization: token $GITHUB_TOKEN" \
                   -H "Accept: application/vnd.github.v3+json" \
                   https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/$ISSUE_NUMBER \
-                  -d "{\"state\": \"closed\", \"body\": \"Issue closed because the TODO was removed.\\n\\nCommit Message: $COMMIT_MESSAGE\"}"
+                  -d "{\"state\": \"closed\", \"body\": $(jq -R <<<"$UPDATED_BODY")}"
             fi
         fi
     done < "$TODO_FILE"
